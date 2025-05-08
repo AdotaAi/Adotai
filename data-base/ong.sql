@@ -1,5 +1,5 @@
 CREATE TABLE Ong (
-    ong_id INT NOT NULL,
+    ong_id INT SERIAL,
     user_id INT,
     ong_nome VARCHAR(100),
     ong_cnpj VARCHAR(14),
