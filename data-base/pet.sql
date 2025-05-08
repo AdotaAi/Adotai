@@ -1,5 +1,5 @@
 CREATE TABLE Pet (
-    pet_id SERIAL INT,
+    pet_id SERIAL,
     ong_id INT NOT NULL,
     pet_nome VARCHAR(200),
     pet_idade INT,

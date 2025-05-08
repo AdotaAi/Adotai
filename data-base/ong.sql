@@ -1,6 +1,6 @@
 CREATE TABLE Ong (
-    ong_id INT SERIAL,
-    user_id INT,
+    ong_id SERIAL,
+    user_id VARCHAR(11),
     ong_nome VARCHAR(100),
     ong_cnpj VARCHAR(14),
     ong_validado BOOLEAN,

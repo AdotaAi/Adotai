@@ -6,6 +6,8 @@ CREATE TABLE Usuarios (
     user_senha VARCHAR(100),
     user_token VARCHAR(62),
     user_dtcriacao TIMESTAMP,
-    user_img_url VARCHAR(500),
-    PRIMARY KEY (user_id);
+    user_img_url TEXT CHECK (user_img_url ~ '^https?://'),
+    user_tipo INT,
+    FOREIGN KEY (user_tipo) REFERENCES Tipo(tipo_id),
+    PRIMARY KEY (user_id)
 );
