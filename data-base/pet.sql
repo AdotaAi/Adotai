@@ -1,5 +1,5 @@
 CREATE TABLE Pet (
-    pet_id SERIAL,
+	pet_id SERIAL,
     ong_id INT NOT NULL,
     pet_nome VARCHAR(200),
     pet_idade INT,
@@ -9,7 +9,7 @@ CREATE TABLE Pet (
     pet_temperamento VARCHAR(200),
     pet_pcd BOOLEAN,
     pet_descricao TEXT,
-    pet_imgurl VARCHAR(400),
+    pet_img_url TEXT,
     PRIMARY KEY (pet_id),
     FOREIGN KEY (ong_id) REFERENCES Ong(ong_id)
 );
