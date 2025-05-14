@@ -142,6 +142,28 @@ class AdopterController {
         }
 
     }
+
+    async getProfile(req: Request, res: Response) {
+        const { token } = req.body;
+
+        if(!token) {
+            return res.sendStatus(400);
+        }
+
+        try {
+            const client = db();
+            const user = await client.query(`
+                SELECT user_nome, user_email, user_img_url FROM Usuarios
+                WHERE user_token = $1
+            `, [token]);
+
+            return res.status(200).send(user.rows[0]);
+
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+    }
 }
 
 export default new AdopterController();
