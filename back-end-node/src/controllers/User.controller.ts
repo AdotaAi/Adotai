@@ -12,8 +12,9 @@ class UserController {
             return;
         }
 
+        const client = await db();
+
         try {
-            const client = await db();
 
             const user = await client.query('SELECT user_senha, user_token, tipo_id FROM Usuarios WHERE user_email = $1', [email]);
             if (!user.rows[0]) {
@@ -32,6 +33,8 @@ class UserController {
         } catch (error) {
             res.sendStatus(500);
             return;
+        } finally {
+            client.release();
         }
     }
 
@@ -43,8 +46,10 @@ class UserController {
             return;
         }
 
+        const client = await db();
+
         try {
-            const client = await db();
+            
             const tipo = await client.query(`
                 SELECT tipo_id, user_id FROM Usuarios
                 WHERE user_token = $1
@@ -71,9 +76,9 @@ class UserController {
             } else if (tipo.rows[0].tipo_id === 2) {
                 const user = await client.query(`
                     SELECT Ong.ong_nome, Usuarios.user_email, Usuarios.user_img_url
-                    FROM Ongs
-                    INNER JOIN Usuarios
-                    ON Ongs.user_id = Usuarios.user_id
+                    FROM Usuarios
+                    INNER JOIN Ong
+                    ON Ong.user_id = Usuarios.user_id
                     WHERE Usuarios.user_token = $1
                 `, [token]);
 
@@ -93,6 +98,8 @@ class UserController {
             console.log(error);
             res.sendStatus(500);
             return;
+        } finally {
+            client.release();
         }
     }
 }

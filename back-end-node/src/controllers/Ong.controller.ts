@@ -22,8 +22,10 @@ class OngController {
             return;
         }
 
+        const client = await db();
+
         try {
-            const client = await db();
+            
             await client.query(`
                     INSERT INTO Usuarios (
                         user_id,
@@ -101,6 +103,8 @@ class OngController {
             console.error(error);
             res.sendStatus(400);
             return;
+        } finally {
+            client.release();
         }
     }
 
@@ -136,8 +140,10 @@ class OngController {
             return;
         }
 
+        const client = await db();
+
         try {
-            const client = await db();
+            
 
             const userId = await client.query(`SELECT user_id FROM Usuarios WHERE user_token = $1`, [token]);
             const ongId = await client.query(`SELECT ong_id FROM Ong WHERE user_id = $1`, [userId.rows[0].user_id]);
@@ -154,9 +160,10 @@ class OngController {
                         pet_temperamento,
                         pet_pcd,
                         pet_descricao,
-                        pet_img_url
+                        pet_img_url,
+                        pet_cor
                     ) VALUES (
-                        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+                        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
                     )
                     `, [
                 ongId.rows[0].ong_id,
@@ -169,7 +176,8 @@ class OngController {
                 temperament,
                 petPcd,
                 description,
-                `http://192.168.0.104:3000/img/${req.file?.filename}`
+                `http://192.168.0.103:3000/img/${req.file?.filename}`,
+                color
             ]);
 
             res.sendStatus(200);
@@ -178,6 +186,8 @@ class OngController {
             console.error(error);
             res.sendStatus(400);
             return;
+        } finally {
+            client.release();
         }
     }
 
@@ -189,8 +199,10 @@ class OngController {
             return;
         }
 
+        const client = await db();
+
         try {
-            const client = await db();
+            
 
             const userId = await client.query(`SELECT user_id FROM Usuarios WHERE user_token = $1`, [token]);
             const ongId = await client.query(`SELECT ong_id FROM Ong WHERE user_id = $1`, [userId.rows[0].user_id]);
@@ -208,6 +220,8 @@ class OngController {
             console.error(error);
             res.sendStatus(400);
             return;
+        } finally {
+            client.release();
         }
 
 

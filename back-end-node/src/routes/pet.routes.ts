@@ -3,4 +3,6 @@ import PetController from "../controllers/Pet.controller";
 
 const router: Router = Router();
 
-router.get('/pet/:id', PetController.getPetId);
+router.get('/about/:id', PetController.getPetInfo);
+
+export default router;

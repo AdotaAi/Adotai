@@ -21,12 +21,14 @@ class AdopterController {
             !login
         ) {
             res.sendStatus(400);
+            console.log('Falta dados');
             return;
         }
 
+        const client = await db();
 
         try {
-            const client = await db();
+            
             await client.query(`
             INSERT INTO Usuarios (
                 user_id,
@@ -141,6 +143,8 @@ class AdopterController {
             console.log(error);
             res.sendStatus(500);
             return;
+        } finally {
+            client.release();
         }
 
     }
