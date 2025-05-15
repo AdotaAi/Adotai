@@ -5,10 +5,9 @@ class PetControllet{
 
     static getPetId: RequestHandler = async (req: Request, res: Response) => {
         
-        const { token } = req.body;
         const petId = req.params.id_pet;
 
-        if(!petId || token){
+        if(!petId){
             res.sendStatus(400);
             return;
         }
