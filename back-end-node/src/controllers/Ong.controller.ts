@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, RequestHandler } from "express";
 import db from "../config/db.ts";
 import createToken from "../core/token.ts";
 import { comparePassword, hashPassword } from "../core/hash.ts";
 
 class OngController {
-    async createOng(req: Request, res: Response) {
+    static createOng: RequestHandler = async (req: Request, res: Response) => {
         const {
             about,
             address,
@@ -18,7 +18,8 @@ class OngController {
             !organization ||
             !login
         ) {
-            return res.sendStatus(400);
+            res.sendStatus(400);
+            return;
         }
 
         try {
@@ -94,14 +95,16 @@ class OngController {
 
             let sessionToken = await client.query(`SELECT user_token FROM Usuarios WHERE user_id = $1`, [about.cpf]);
             console.log(sessionToken.rows[0]);
-            return res.status(200).send(sessionToken.rows[0]);
+            res.status(200).send(sessionToken.rows[0]);
+            return;
         } catch (error) {
-            console.error(error)
-            return res.sendStatus(400);
+            console.error(error);
+            res.sendStatus(400);
+            return;
         }
     }
 
-    async createPet(req: Request, res: Response) { 
+    static createPet: RequestHandler = async (req: Request, res: Response) => { 
 
         const {
             token,
@@ -129,7 +132,8 @@ class OngController {
             !temperament ||
             !description
         ) {
-            return res.sendStatus(400);
+            res.sendStatus(400);
+            return;
         }
 
         try {
@@ -168,18 +172,21 @@ class OngController {
                 `http://192.168.0.104:3000/img/${req.file?.filename}`
             ]);
 
-            return res.sendStatus(200);
+            res.sendStatus(200);
+            return;
         } catch (error) {
-            console.error(error)
-            return res.sendStatus(400);
+            console.error(error);
+            res.sendStatus(400);
+            return;
         }
     }
 
-    async getPets(req: Request, res: Response) {
+    static getPets: RequestHandler = async (req: Request, res: Response) => {
         const { token } = req.body;
 
         if (!token) {
-            return res.sendStatus(400);
+            res.sendStatus(400);
+            return;
         }
 
         try {
@@ -195,10 +202,12 @@ class OngController {
                 WHERE Pet.ong_id = $1;
             `, [ongId.rows[0].ong_id]);
 
-            return res.status(200).send(pets.rows);
+            res.status(200).send(pets.rows);
+            return;
         } catch (error) {
-            console.error(error)
-            return res.sendStatus(400);
+            console.error(error);
+            res.sendStatus(400);
+            return;
         }
 
 
@@ -206,4 +215,4 @@ class OngController {
     
 }
 
-export default new OngController();
+export default OngController;

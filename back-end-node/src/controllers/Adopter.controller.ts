@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, RequestHandler } from "express";
 import db from "../config/db.ts";
 import createToken from "../core/token.ts";
 import { comparePassword, hashPassword } from "../core/hash.ts";
 
 class AdopterController {
-    async createAdopter(req: Request, res: Response) {
+    static createAdopter: RequestHandler = async (req: Request, res: Response) => {
         const {
             about,
             address,
@@ -20,7 +20,8 @@ class AdopterController {
             !preference ||
             !login
         ) {
-            return res.sendStatus(400);
+            res.sendStatus(400);
+            return;
         }
 
 
@@ -133,37 +134,16 @@ class AdopterController {
             ]);
 
             let sessionToken = await client.query(`SELECT user_token FROM Usuarios WHERE user_id = $1`, [about.cpf]);
-            console.log(sessionToken.rows[0]);
-            return res.status(200).send(sessionToken.rows[0]);
+            res.status(200).send(sessionToken.rows[0]);
+            return;
 
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            res.sendStatus(500);
+            return;
         }
 
-    }
-
-    async getProfile(req: Request, res: Response) {
-        const { token } = req.body;
-
-        if(!token) {
-            return res.sendStatus(400);
-        }
-
-        try {
-            const client = db();
-            const user = await client.query(`
-                SELECT user_nome, user_email, user_img_url FROM Usuarios
-                WHERE user_token = $1
-            `, [token]);
-
-            return res.status(200).send(user.rows[0]);
-
-        } catch (error) {
-            console.log(error);
-            return res.sendStatus(500);
-        }
     }
 }
 
-export default new AdopterController();
+export default AdopterController;
