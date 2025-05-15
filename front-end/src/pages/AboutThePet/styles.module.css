@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    
 
     img {
         width: 100%;
@@ -15,13 +16,24 @@
         padding: 2rem;
         width: 100%;
         flex: 1;
+        gap: 2rem;
 
         justify-content: space-between;
 
         div {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem
+            gap: 0.5rem;
+
+            .description {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+
+                p {
+                    text-align: justify;
+                }
+            }
         }
     }
 }

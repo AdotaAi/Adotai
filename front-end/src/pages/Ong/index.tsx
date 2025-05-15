@@ -1,15 +1,37 @@
 import styles from "./styles.module.css";
 import { BottomTabBar } from "../../components/BottomTabBar";
 import { GearSix, Dog, FileMagnifyingGlass, SignOut } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
+import { getProfile } from "../../api";
+import { getSessionData } from "../../core/sStorage";
 
 export function Ong() {
+    const [username, setUsername] = useState('');
+        const [email, setEmail] = useState('');
+        const [userImg, setUserImg] = useState('');
+    
+        useEffect(() => {
+            const fetchProfile = async () => {
+                try {
+                    const response = await getProfile({ token: getSessionData('token') });
+                    setUsername(response.ong_nome);
+                    setEmail(response.user_email);
+                    setUserImg(response.user_img_url);
+                } catch (error) {
+                    console.error('Erro ao buscar usuario:', error);
+                }
+            };
+    
+            fetchProfile();
+        }, []);
+
     return (
         <main className={styles.container}>
             <div className={styles.profile}>
-                <img src="https://placehold.co/400" alt="" />
+                <img src={userImg} alt="" />
                 <div>
-                    <h2>Nome</h2>
-                    <span>example@email.com</span>
+                    <h2>{username}</h2>
+                    <span>{email}</span>
                 </div>
             </div>
             <ul>
