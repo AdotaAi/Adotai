@@ -17,6 +17,7 @@ import { Pets } from './pages/Pets';
 import { Finish } from './pages/register/Finish';
 import { Ong } from './pages/Ong';
 import { NewPet } from './pages/NewPet';
+import { Chat } from './pages/Chat';
 
 export function Router() {
     return (
@@ -38,6 +39,7 @@ export function Router() {
             <Route path="/register/finish" element={<Finish />} />
             <Route path="/ong" element={<Ong />} />
             <Route path="/new-pet" element={<NewPet />} />
+            <Route path="/chat" element={<Chat />} />
         </Routes>
     );
 }

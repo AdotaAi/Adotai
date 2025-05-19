@@ -1,0 +1,35 @@
+.container {
+    width: 100%;
+    display: flex;
+
+    div {
+        display: flex;
+        flex-direction: column;
+        padding: 0.8rem;
+        border-radius: 10px;
+
+        width: fit-content;
+
+        background-color: blue;
+
+        p {
+            color: white;
+            max-width: 15rem;
+            word-wrap: break-word;
+        }
+    }
+}
+
+.self {
+    justify-content: end;
+    div {
+        background-color: #a74e2b;
+    }
+}
+
+.other {
+    justify-content: start;
+    div {
+        background-color: #dd6637;
+    }
+}
