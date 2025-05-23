@@ -141,6 +141,9 @@ class AdopterController {
 
         } catch (error) {
             console.log(error);
+
+            console.log("Erro ao cadastrar adotante");
+
             res.sendStatus(500);
             return;
         } finally {
@@ -148,6 +151,10 @@ class AdopterController {
         }
 
     }
+
+    static createRequest: RequestHandler = async (req: Request, res: Response) => {
+        const { petId, adopterId } = req.body;
+    };
 }
 
 export default AdopterController;

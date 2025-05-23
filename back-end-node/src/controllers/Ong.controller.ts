@@ -161,9 +161,10 @@ class OngController {
                         pet_pcd,
                         pet_descricao,
                         pet_img_url,
-                        pet_cor
+                        pet_cor,
+                        pet_situacao
                     ) VALUES (
-                        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+                        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
                     )
                     `, [
                 ongId.rows[0].ong_id,
@@ -176,8 +177,9 @@ class OngController {
                 temperament,
                 petPcd,
                 description,
-                `http://192.168.0.103:3000/img/${req.file?.filename}`,
-                color
+                `http://192.168.0.104:3000/img/${req.file?.filename}`,
+                color,
+                'Disponível'
             ]);
 
             res.sendStatus(200);
