@@ -7,6 +7,7 @@ import { getPets } from "../../api";
 import { useEffect, useState } from "react";
 import { getSessionData } from "../../core/sStorage";
 
+
 export function Pets() {
     const navigate = useNavigate();
 

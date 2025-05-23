@@ -4,11 +4,12 @@ import { GearSix, Dog, FileMagnifyingGlass, SignOut } from "@phosphor-icons/reac
 import { useEffect, useState } from "react";
 import { getProfile } from "../../api";
 import { getSessionData } from "../../core/sStorage";
+import placeholderImage from "../../assets/placeholder.gif";
 
 export function Ong() {
     const [username, setUsername] = useState('');
         const [email, setEmail] = useState('');
-        const [userImg, setUserImg] = useState('');
+        const [userImg, setUserImg] = useState(placeholderImage);
     
         useEffect(() => {
             const fetchProfile = async () => {

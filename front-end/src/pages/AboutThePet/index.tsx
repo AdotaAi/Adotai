@@ -4,6 +4,7 @@ import { Button } from "../../components/Button";
 import { getData } from "../../core/lStorage";
 import { getPet } from "../../api";
 import { useEffect, useState } from "react";
+import placeholderImage from "../../assets/placeholder.gif";
 
 export function AboutThePet() {
 
@@ -17,7 +18,7 @@ export function AboutThePet() {
         pet_raca: '',
         pet_cor: '',
         pet_descricao: '',
-        pet_img_url: ''
+        pet_img_url: placeholderImage
     });
 
     useEffect(() => {
