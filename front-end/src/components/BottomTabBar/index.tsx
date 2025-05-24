@@ -33,7 +33,7 @@ export function BottomTabBar({ currentPage, variant }: BottomTabBarProps) {
                             size={32}
                             weight="fill"
                             className={currentPage === 'chat' ? styles.active : styles.inactive}
-                            onClick={() => navigate('/requests')}
+                            onClick={() => navigate('/ong-requests')}
                         />
                     </>
                 ) : (

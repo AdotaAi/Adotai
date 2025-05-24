@@ -2,11 +2,10 @@ import styles from "./styles.module.css";
 import { BottomTabBar } from "../../components/BottomTabBar";
 import { PetRequest } from "../../components/PetRequest";
 import { SectionHeader } from "../../components/SectionHeader";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { getRequests } from "../../api";
 
-export function Requests() {
-
+export function OngRequests() {
     const [requests, setRequests] = useState([]);
 
     useEffect(() => {
@@ -22,10 +21,10 @@ export function Requests() {
         fetchPets();
     }, []);
 
-
     return (
         <main className={styles.container}>
             <SectionHeader title="Pedidos de adoção" />
+
             {requests.map((request: any) => (
                 <PetRequest
                     key={request.ped_id}
@@ -36,7 +35,7 @@ export function Requests() {
                 />
             ))}
 
-            <BottomTabBar currentPage="chat" />
+            <BottomTabBar currentPage="chat" variant="ong" />
         </main>
     )
 }

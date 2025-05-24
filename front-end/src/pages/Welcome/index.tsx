@@ -2,7 +2,7 @@ import logo from "../../assets/logo1.png";
 import background from "../../assets/background.png";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
-import { Radio } from "../../components/Radio";
+import { setData } from "../../core/lStorage";
 import styles from "./styles.module.css";
 import { postLogin } from "../../api";
 
@@ -22,6 +22,7 @@ export function Welcome() {
     const submit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         postLogin({ email, password }).then((data) => {
+            setData('email', email);
             if (data === 1) {
                 navigate('/match');
             } if (data === 2) {

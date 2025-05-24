@@ -6,7 +6,17 @@
     --background: #dfdfdf;
     --title: #3D3B3B;
     --text: #525151;
+    --partition:#9b9b9b;
     --defaultPadding: 1.4rem;
+}
+
+.dark {
+    --primary: #CE6337;
+    --primary-shadow: #a74e2b;
+    --background:rgb(41, 29, 24);
+    --title:#e6e6e6;
+    --text:#c0c0c0;
+    --partition:#7e7e7e;
 }
 
 
@@ -21,6 +31,6 @@ p, span, label, input, textarea {
     color: var(--text);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, strong {
     color: var(--title);
 }

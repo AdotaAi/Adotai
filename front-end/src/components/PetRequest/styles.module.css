@@ -6,6 +6,7 @@
     border-bottom: 1px solid var(--text);
     padding: 1rem 0.5rem;
     gap: 1rem;
+    color: var(--text);
 
     img {
         width: 4rem;

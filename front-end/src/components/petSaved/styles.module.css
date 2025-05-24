@@ -3,8 +3,9 @@
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--text);
+    border-bottom: 1px solid var(--partition);
     padding: 1rem 0.5rem;
+    color: var(--text);
     gap: 1rem;
 
     img {

@@ -2,9 +2,39 @@ import styles from "./styles.module.css";
 import { ArrowLeft, PaperPlaneTilt } from "@phosphor-icons/react";
 import { Message } from "../../components/Message";
 import { useNavigate } from "react-router-dom";
+import placeholderImage from "../../assets/placeholder.gif";
+import { useState, useEffect } from "react";
+import { getMessages, sendMessages } from "../../api";
+import { getData } from "../../core/lStorage";
 
 export function Chat() {
+    const [messages, setMessages] = useState([]);
     const navigate = useNavigate();
+
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                const response = await getMessages();
+                setMessages(response);
+            } catch (error) {
+                console.error('Erro ao buscar mensagens:', error);
+            }
+        };
+        fetchMessages();
+    }, []);
+
+    const handleSendMessage = async (e: any) => {
+        e.preventDefault();
+        try {
+            await sendMessages({ message: message, email: getData('email'), pedId: getData('request') });
+            setMessage('');
+        } catch (error) {
+            console.error('Erro ao enviar mensagem:', error);
+        }
+    }
+
     return (
         <main className={styles.container}>
             <header>
@@ -13,42 +43,21 @@ export function Chat() {
                 />
                 <div>
                     <strong>Nome</strong>
-                    <img src=""/>
+                    <img src={placeholderImage} alt="avatar"/>
                 </div>
             </header>
             <section className={styles.chat}>
-                <Message variant="self">
-                    E aí, tudo certo?
-                </Message>
-                <Message variant="other">
-                    Oi! Tudo sim, e contigo?
-                </Message>
-                <Message variant="self">
-                    Tranquilo 😊
-                </Message>
-                <Message variant="other">
-                    Tava pensando naquele projeto que a gente comentou ontem...
-                    Será que rola de começar essa semana já?
-                </Message>
-                <Message variant="self">
-                    Acho que sim!
-                    Mas a gente precisa alinhar umas coisas antes.
-                </Message>
-                <Message variant="other">
-                    Tipo?
-                </Message>
-                <Message variant="self">
-                    Então, eu dei uma olhada nas ideias que a gente anotou e acho que seria bom a gente definir primeiro quem vai cuidar de qual parte, sabe?
-                    Pra não acabar tudo embolado depois.
-                    Aí a gente já começa com cada um sabendo o que fazer e evita retrabalho.
-                    Posso até montar um doc com as divisões e te mando pra revisar, o que acha?
-                </Message>
+                {messages.map((message: any) => (
+                    <Message key={message.msg_id} variant={message.user_email === getData('email') ? 'self' : 'other'}>
+                        {message.msg_conteudo}
+                    </Message>
+                ))}
             </section>
-            <form>
+            <form onSubmit={(e) => handleSendMessage(e)}>
                 <div>
-                    <input type="text" placeholder="Digite sua mensagem"/>
+                    <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Digite sua mensagem"/>
                 </div>
-                <button>
+                <button type="submit">
                     <PaperPlaneTilt size={32} weight="fill" />
                 </button>
             </form>

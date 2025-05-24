@@ -2,6 +2,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
+    background-color: var(--background);
     header {
         display: flex;
         align-items: center;
@@ -29,7 +30,7 @@
 
     .chat {
         flex: 1;
-        overflow: scroll;
+        overflow-y: scroll;
         padding: 1rem;
         display: flex;
         flex-direction: column;

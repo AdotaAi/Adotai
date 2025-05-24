@@ -12,6 +12,7 @@ import { Match } from './pages/Match';
 import { User } from './pages/User';
 import { Saved } from './pages/Saved';
 import { Requests } from './pages/Requests';
+import { OngRequests } from './pages/OngRequests';
 import { AboutThePet } from './pages/AboutThePet';
 import { Pets } from './pages/Pets';
 import { Finish } from './pages/register/Finish';
@@ -40,6 +41,7 @@ export function Router() {
             <Route path="/ong" element={<Ong />} />
             <Route path="/new-pet" element={<NewPet />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/ong-requests" element={<OngRequests />} />
         </Routes>
     );
 }
