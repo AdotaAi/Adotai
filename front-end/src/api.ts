@@ -3,7 +3,7 @@ import { getSessionData, setSessionData } from "./core/sStorage";
 import { getData } from "./core/lStorage";
 
 const api = axios.create({
-    baseURL: 'http://192.168.0.104:3000/',
+    baseURL: 'http://192.168.0.105:3000/',
 });
 
 export const postRegister = async (entity: string, data: any) => {
@@ -68,6 +68,15 @@ export const getPet = async (data: any) => {
     }
 };
 
+export const newRequest = async (data: any) => {
+    try {
+        const response = await api.post(`/requests/new`, data);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
 export const getRequests = async () => {
     try {
         const response = await api.get(`/requests/${getSessionData('token')}`);

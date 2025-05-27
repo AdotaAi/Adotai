@@ -13,17 +13,28 @@ export function Chat() {
 
     const [message, setMessage] = useState('');
 
+
+
     useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                const response = await getMessages();
-                setMessages(response);
-            } catch (error) {
-                console.error('Erro ao buscar mensagens:', error);
-            }
-        };
         fetchMessages();
     }, []);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchMessages();
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const fetchMessages = async () => {
+        try {
+            const response = await getMessages();
+            setMessages(response);
+        } catch (error) {
+            console.error('Erro ao buscar mensagens:', error);
+        }
+    };
 
     const handleSendMessage = async (e: any) => {
         e.preventDefault();
@@ -38,12 +49,12 @@ export function Chat() {
     return (
         <main className={styles.container}>
             <header>
-                <ArrowLeft size={32} 
+                <ArrowLeft size={32}
                     onClick={() => navigate(-1)}
                 />
                 <div>
                     <strong>Nome</strong>
-                    <img src={placeholderImage} alt="avatar"/>
+                    <img src={placeholderImage} alt="avatar" />
                 </div>
             </header>
             <section className={styles.chat}>
@@ -55,7 +66,7 @@ export function Chat() {
             </section>
             <form onSubmit={(e) => handleSendMessage(e)}>
                 <div>
-                    <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Digite sua mensagem"/>
+                    <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Digite sua mensagem" />
                 </div>
                 <button type="submit">
                     <PaperPlaneTilt size={32} weight="fill" />

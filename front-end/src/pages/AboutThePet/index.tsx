@@ -1,12 +1,16 @@
 import styles from "./styles.module.css";
 import { StackHeader } from "../../components/StackHeader";
 import { Button } from "../../components/Button";
-import { getData } from "../../core/lStorage";
 import { getPet } from "../../api";
 import { useEffect, useState } from "react";
 import placeholderImage from "../../assets/placeholder.gif";
+import { newRequest } from "../../api";
+import { getSessionData } from "../../core/sStorage";
+import { getData } from "../../core/lStorage";
+import { useNavigate } from "react-router-dom";
 
 export function AboutThePet() {
+    const navigate = useNavigate();
 
     const [pet, setPet] = useState({
         pet_nome: '',
@@ -85,7 +89,18 @@ export function AboutThePet() {
                         <p>{pet.pet_descricao}</p>
                     </span>
                 </div>
-                <Button>
+                <Button onClick={() => {
+                    const token = getSessionData('token');
+                    const petId = getData('pet');
+                    const data = { token, petId };
+                    try {
+                        newRequest(data);
+                    } catch (error) {
+                        console.error(error);
+                    } finally {
+                        navigate('/requests');
+                    }
+                }}>
                     Adotar este pet
                 </Button>
             </section>

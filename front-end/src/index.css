@@ -19,6 +19,10 @@
     --partition:#7e7e7e;
 }
 
+body {
+    background: var(--background);
+}
+
 
 * {
     margin: 0;
