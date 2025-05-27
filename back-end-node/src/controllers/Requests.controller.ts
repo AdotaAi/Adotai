@@ -31,7 +31,7 @@ class RequestsController {
 
             let adopterId = await client.query(`
                 SELECT adt_id
-                FROM Adotantes
+                FROM Adotante
                 WHERE user_id = $1
                 `, [userId]);
             
