@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./styles.module.css";
 import { X, Heart, ShareFat, MapPin } from "@phosphor-icons/react";
-import { setData } from "../../core/lStorage";
+import { setData, getData } from "../../core/lStorage";
 import { useNavigate } from "react-router-dom";
 
 type Info = {
@@ -54,6 +54,12 @@ export function Swiper() {
         setIndex((prev) => (prev < dados.length - 1 ? prev + 1 : 0));
     };
 
+    const handleSave = (id : number) => {
+        let petsSalvos = getData('pets-salvos') || [];
+        petsSalvos.push(id);
+        setData('pets-salvos', petsSalvos);
+    }
+
     const currentInfo = dados[index];
 
     return (
@@ -94,7 +100,7 @@ export function Swiper() {
                     </div>
                     <div className={styles.buttons}>
                         <button><ShareFat size={32} weight="fill"/></button>
-                        <button><Heart size={32} weight="fill"/></button>
+                        <button onClick={() => {handleSave(currentInfo.id)}}><Heart size={32} weight="fill"/></button>
                         <button onClick={handleNext}><X size={32}/></button>
                     </div>
                 </motion.div>
