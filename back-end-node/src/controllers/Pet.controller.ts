@@ -2,11 +2,11 @@ import { Request, Response, RequestHandler } from "express";
 import db from "../config/db.ts";
 
 interface SavedPetResponse {
-  petId: number;
-  petName: string;
-  petPhoto: string;
-  ongName: string;
-  ongId: number;
+    petId: number;
+    petName: string;
+    petPhoto: string;
+    ongName: string;
+    ongId: number;
 }
 
 class PetController {
@@ -82,23 +82,24 @@ class PetController {
             client.release();
         }
     }
+
     static getSavedPets: RequestHandler = async (req: Request, res: Response) => {
-    const petIds = req.body; // Recebe array de IDs diretamente no body
+        const petIds = req.body; // Recebe array de IDs diretamente no body
 
-    if (!petIds || !Array.isArray(petIds)) {
-        res.status(400).send('Envie um array com os IDs dos pets');
-        console.log('Falta dados ou formato inválido');
-        return;
-    }
+        if (!petIds || !Array.isArray(petIds)) {
+            res.status(400).send('Envie um array com os IDs dos pets');
+            console.log('Falta dados ou formato inválido');
+            return;
+        }
 
-    if (petIds.length === 0) {
-        res.status(200).send([]);
-        return;
-    }
+        if (petIds.length === 0) {
+            res.status(200).send([]);
+            return;
+        }
 
-    const client = await db();
-    try {
-        const pets = await client.query(`
+        const client = await db();
+        try {
+            const pets = await client.query(`
             SELECT
                 Pet.pet_id,
                 Pet.pet_nome,
@@ -112,35 +113,37 @@ class PetController {
             WHERE Pet.pet_id = ANY($1::int[])
         `, [petIds]);
 
-        const formattedPets = pets.rows.map(pet => ({
-            petId: pet.pet_id,
-            petName: pet.pet_nome,
-            petPhoto: pet.pet_img_url,
-            ongName: pet.ong_nome,
-            ongId: pet.ong_id,
-            cidade: pet.end_cidade
-        }));
+            const formattedPets = pets.rows.map(pet => ({
+                petId: pet.pet_id,
+                petName: pet.pet_nome,
+                petPhoto: pet.pet_img_url,
+                ongName: pet.ong_nome,
+                ongId: pet.ong_id,
+                cidade: pet.end_cidade
+            }));
 
-        res.status(200).send(formattedPets);
-    } catch (error) {
-        res.status(400).send('Erro ao buscar pets salvos');
-        console.log(error);
-    } finally {
-        client.release();
-    }
-};
+            res.status(200).send(formattedPets);
+        } catch (error) {
+            res.status(400).send('Erro ao buscar pets salvos');
+            console.log(error);
+        } finally {
+            client.release();
+        }
+    };
+
+    
     static getRecomendedPets: RequestHandler = async (req: Request, res: Response) => {
-    const userId = req.params.userId; // Ou extrair do token JWT
+        const userId = req.params.userId; // Ou extrair do token JWT
 
-    if (!userId) {
-        res.status(400).send('ID do usuário é obrigatório');
-        return;
-    }
+        if (!userId) {
+            res.status(400).send('ID do usuário é obrigatório');
+            return;
+        }
 
-    const client = await db();
-    try {
-        // 1. Obter CEP e preferências do adotante
-        const userData = await client.query(`
+        const client = await db();
+        try {
+            // 1. Obter CEP e preferências do adotante
+            const userData = await client.query(`
             SELECT 
                 e.end_cep,
                 p.pref_especie,
@@ -154,20 +157,20 @@ class PetController {
             WHERE u.user_id = $1
         `, [userId]);
 
-        if (userData.rows.length === 0) {
-            res.status(404).send('Usuário não encontrado');
-            return;
-        }
+            if (userData.rows.length === 0) {
+                res.status(404).send('Usuário não encontrado');
+                return;
+            }
 
-        const { end_cep, pref_especie, pref_porte, pref_idade, pref_temperamento } = userData.rows[0];
-        const cepBase = end_cep.substring(0, 4); // Pega os primeiros 4 dígitos do CEP
+            const { end_cep, pref_especie, pref_porte, pref_idade, pref_temperamento } = userData.rows[0];
+            const cepBase = end_cep.substring(0, 4); // Pega os primeiros 4 dígitos do CEP
 
-        // 2. Definir faixa de CEP (ex: 5008 -> busca 5005 a 5011)
-        const cepMin = `${Number(cepBase) - 3}0000`;
-        const cepMax = `${Number(cepBase) + 3}9999`;
+            // 2. Definir faixa de CEP (ex: 5008 -> busca 5005 a 5011)
+            const cepMin = `${Number(cepBase) - 3}0000`;
+            const cepMax = `${Number(cepBase) + 3}9999`;
 
-        // 3. Buscar pets compatíveis
-        const recommendedPets = await client.query(`
+            // 3. Buscar pets compatíveis
+            const recommendedPets = await client.query(`
             SELECT 
                 p.pet_id as petId,
                 p.pet_nome as petName,
@@ -196,25 +199,25 @@ class PetController {
             LIMIT 10
         `, [cepMin, cepMax, pref_especie, pref_porte, pref_idade, pref_temperamento]);
 
-        // 4. Formatar resposta
-        const formattedPets = recommendedPets.rows.map(pet => ({
-            petId: pet.petid,
-            petName: pet.petname,
-            petPhoto: pet.petphoto,
-            address: pet.address,
-            ongName: pet.ongname,
-            age: pet.petage,
-            temperament: pet.pettemperament
-        }));
+            // 4. Formatar resposta
+            const formattedPets = recommendedPets.rows.map(pet => ({
+                petId: pet.petid,
+                petName: pet.petname,
+                petPhoto: pet.petphoto,
+                address: pet.address,
+                ongName: pet.ongname,
+                age: pet.petage,
+                temperament: pet.pettemperament
+            }));
 
-        res.status(200).json(formattedPets);
-    } catch (error) {
-        console.error('Erro na recomendação:', error);
-        res.status(500).send('Erro ao buscar pets recomendados');
-    } finally {
-        client.release();
-    }
-};
+            res.status(200).json(formattedPets);
+        } catch (error) {
+            console.error('Erro na recomendação:', error);
+            res.status(500).send('Erro ao buscar pets recomendados');
+        } finally {
+            client.release();
+        }
+    };
 }
 
 export default PetController;
