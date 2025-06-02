@@ -1,7 +1,7 @@
 import styles from "./styles.module.css";
 import { Trash } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
-import { setData } from "../../core/lStorage";
+import { setData, getData } from "../../core/lStorage";
 
 interface petSavedProps {
     name: string;
@@ -25,7 +25,11 @@ export function PetSaved({ name, ongName, img, id }: petSavedProps) {
                 <h3>{name}</h3>
                 <span>{ongName}</span>
             </div>
-            <Trash size={24} />
+            <Trash onClick={() => {
+                let pets: number[] = getData('savedPets');
+                pets = pets.filter(pet => pet !== id);
+                setData('savedPets', pets);
+            }} size={24} />
         </article>
     );
 }

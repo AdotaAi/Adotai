@@ -15,7 +15,7 @@ export default function App() {
       <StatusBar barStyle="light-content" backgroundColor="#202020" />
       <SafeAreaView style={styles.container}>
         <WebView
-          source={{ uri: 'http://192.168.0.105:5173/' }}
+          source={{ uri: 'http://192.168.0.102:5173/' }}
           style={{ flex: 1 }}
         />
       </SafeAreaView>

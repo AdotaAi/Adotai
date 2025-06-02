@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import styles from "./styles.module.css";
 import { X, Heart, ShareFat, MapPin } from "@phosphor-icons/react";
 import { setData, getData } from "../../core/lStorage";
-import { setData, getData } from "../../core/lStorage";
 import { useNavigate } from "react-router-dom";
 import { getRecomendedPets } from "../../api";
 

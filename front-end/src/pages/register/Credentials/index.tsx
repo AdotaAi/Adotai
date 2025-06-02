@@ -4,6 +4,7 @@ import { getData, updateData } from "../../../core/lStorage";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { postRegister } from "../../../api";
+import { setSessionData } from "../../../core/sStorage";
 
 import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
@@ -16,7 +17,7 @@ export function Credentials() {
 
     const navigate = useNavigate();
 
-    const submit = (event: React.FormEvent<HTMLFormElement>) => {
+    const submit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (password !== confirmPassword) {
             alert('As senhas devem ser iguais');
@@ -38,9 +39,18 @@ export function Credentials() {
             password: password
         });
 
-        postRegister(getData('register').howAreYou ,getData('register')).then(() => {
+        
+        try {
+            const response = await postRegister(getData('register').howAreYou ,getData('register'));
+            console.log(response);
+            setSessionData('token', response.user_token);
+        } catch (error) {
+            console.error(error);
+            throw error;
+        } finally {
             navigate('/register/finish');
-        });
+        }
+
 
     }
 

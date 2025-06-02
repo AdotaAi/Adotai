@@ -128,3 +128,13 @@ export const getSavedPets = async (data: number[]) => {
         throw error;
     }
 }
+
+export const getRequest = async () => {
+    try {
+        const response = await api.get(`/requests/${getData('request')}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
