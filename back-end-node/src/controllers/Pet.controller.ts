@@ -142,75 +142,106 @@ class PetController {
 
         const client = await db();
         try {
-            // 1. Obter CEP e preferências do adotante
-            const userData = await client.query(`
-            SELECT 
-                e.end_cep,
-                p.pref_especie,
-                p.pref_porte,
-                p.pref_idade,
-                p.pref_temperamento
-            FROM Usuarios u
-            JOIN Adotante a ON u.user_id = a.user_id
-            JOIN Preferencia p ON a.adt_id = p.adt_id
-            JOIN Endereco e ON u.user_id = e.user_id
-            WHERE u.user_id = $1
-        `, [userId]);
+            const pets = await client.query(`
+                WITH preferencias_adotante AS (
+                    SELECT pref.*, e.end_cep AS adotante_cep
+                    FROM Usuarios u
+                    JOIN Adotante a ON u.user_id = a.user_id
+                    JOIN Preferencia pref ON a.adt_id = pref.adt_id
+                    JOIN Endereco e ON u.user_id = e.user_id
+                    WHERE u.user_token = $1
+                    AND u.tipo_id = (SELECT tipo_id FROM Tipo WHERE tipo_nome = 'Adotante')
+                )
 
-            if (userData.rows.length === 0) {
-                res.status(404).send('Usuário não encontrado');
-                return;
-            }
-
-            const { end_cep, pref_especie, pref_porte, pref_idade, pref_temperamento } = userData.rows[0];
-            const cepBase = end_cep.substring(0, 4); // Pega os primeiros 4 dígitos do CEP
-
-            // 2. Definir faixa de CEP (ex: 5008 -> busca 5005 a 5011)
-            const cepMin = `${Number(cepBase) - 3}0000`;
-            const cepMax = `${Number(cepBase) + 3}9999`;
-
-            // 3. Buscar pets compatíveis
-            const recommendedPets = await client.query(`
-            SELECT 
-                p.pet_id as petId,
-                p.pet_nome as petName,
-                p.pet_img_url as petPhoto,
-                p.pet_idade as petAge,
-                p.pet_temperamento as petTemperament,
-                o.ong_nome as ongName,
-                e.end_rua || ', ' || e.end_numero || ' - ' || e.end_bairro || ', ' || e.end_cidade as address
-            FROM Pet p
-            JOIN Ong o ON p.ong_id = o.ong_id
-            JOIN Usuarios u ON o.user_id = u.user_id
-            JOIN Endereco e ON u.user_id = e.user_id
-            WHERE 
-                e.end_cep BETWEEN $1 AND $2
-                AND ($3::varchar IS NULL OR p.pet_especie = $3)
-                AND ($4::varchar IS NULL OR p.pet_porte = $4)
-                AND ($5::varchar IS NULL OR 
-                    CASE 
-                        WHEN $5 = 'Filhote' THEN p.pet_idade <= 2
-                        WHEN $5 = 'Adulto' THEN p.pet_idade > 2 AND p.pet_idade <= 8
-                        WHEN $5 = 'Idoso' THEN p.pet_idade > 8
-                        ELSE true
-                    END)
-                AND ($6::varchar IS NULL OR p.pet_temperamento ILIKE '%' || $6 || '%')
-            ORDER BY RANDOM()
-            LIMIT 10
-        `, [cepMin, cepMax, pref_especie, pref_porte, pref_idade, pref_temperamento]);
-
-            // 4. Formatar resposta
-            const formattedPets = recommendedPets.rows.map(pet => ({
-                petId: pet.petid,
-                petName: pet.petname,
-                petPhoto: pet.petphoto,
-                address: pet.address,
-                ongName: pet.ongname,
-                age: pet.petage,
-                temperament: pet.pettemperament
-            }));
-
-            res.status(200).json(formattedPets);
+                SELECT 
+                    p.pet_id,
+                    p.pet_nome,
+                    p.pet_img_url,
+                    o.ong_nome,
+                    e_ong.end_bairro
+                FROM Pet p
+                JOIN Ong o ON p.ong_id = o.ong_id
+                JOIN Usuarios u_ong ON o.user_id = u_ong.user_id
+                JOIN Endereco e_ong ON u_ong.user_id = e_ong.user_id
+                WHERE 
+                    o.ong_validado = FALSE
+                    AND EXISTS (
+                        SELECT 1 FROM preferencias_adotante pref
+                        WHERE (
+                            p.pet_especie = pref.pref_especie 
+                            OR pref.pref_especie IS NULL 
+                            OR pref.pref_especie = 'Ambos'
+                            OR pref.pref_especie = 'Sem preferência'
+                        )
+                        AND (
+                            (pref.pref_porte = 'Pequeno' AND p.pet_peso <= 10) OR
+                            (pref.pref_porte = 'Médio' AND p.pet_peso > 10 AND p.pet_peso <= 25) OR
+                            (pref.pref_porte = 'Grande' AND p.pet_peso > 25) OR
+                            pref.pref_porte IS NULL OR
+                            pref.pref_porte = 'Sem preferência'
+                        )
+                        AND (
+                            (pref.pref_idade = 'Filhote' AND p.pet_idade <= 2) OR
+                            (pref.pref_idade = 'Adulto' AND p.pet_idade > 2 AND p.pet_idade <= 8) OR
+                            (pref.pref_idade = 'Idoso' AND p.pet_idade > 8) OR
+                            pref.pref_idade IS NULL OR
+                            pref.pref_idade = 'Sem preferência'
+                        )
+                        AND (
+                            p.pet_sexo = pref.pref_sexo 
+                            OR pref.pref_sexo IS NULL 
+                            OR pref.pref_sexo = 'Ambos'
+                            OR pref.pref_sexo = 'Sem preferência'
+                        )
+                        AND (
+                            p.pet_temperamento = pref.pref_temperamento 
+                            OR pref.pref_temperamento IS NULL 
+                            OR pref.pref_temperamento = 'Sem preferência'
+                        )
+                        AND (
+                            p.pet_pcd = FALSE 
+                            OR pref.pref_aceita_pets_pcd = TRUE 
+                            OR pref.pref_aceita_pets_pcd IS NULL
+                        )
+                        AND CAST(e_ong.end_cep AS BIGINT) BETWEEN 
+                            (CAST(SUBSTRING((SELECT adotante_cep FROM preferencias_adotante), 1, 2) AS BIGINT) * 1000000 + 
+                            GREATEST(CAST(SUBSTRING((SELECT adotante_cep FROM preferencias_adotante), 3, 6) AS BIGINT) - 30000, 0))
+                            AND 
+                            (CAST(SUBSTRING((SELECT adotante_cep FROM preferencias_adotante), 1, 2) AS BIGINT) * 1000000 + 
+                            LEAST(CAST(SUBSTRING((SELECT adotante_cep FROM preferencias_adotante), 3, 6) AS BIGINT) + 30000, 999999))
+                    )
+                ORDER BY 
+                    CASE
+                        WHEN EXISTS (
+                            SELECT 1 FROM preferencias_adotante pref 
+                            WHERE p.pet_especie = pref.pref_especie 
+                            AND pref.pref_especie NOT IN ('Ambos', 'Sem preferência')
+                        ) THEN 0 ELSE 1 
+                    END,
+                    CASE
+                        WHEN p.pet_peso <= 10 AND EXISTS (
+                            SELECT 1 FROM preferencias_adotante pref 
+                            WHERE pref.pref_porte = 'Pequeno' 
+                            AND pref.pref_porte NOT IN ('Sem preferência')
+                        ) THEN 0
+                        WHEN p.pet_peso > 10 AND p.pet_peso <= 25 AND EXISTS (
+                            SELECT 1 FROM preferencias_adotante pref 
+                            WHERE pref.pref_porte = 'Médio' 
+                            AND pref.pref_porte NOT IN ('Sem preferência')
+                        ) THEN 0
+                        WHEN p.pet_peso > 25 AND EXISTS (
+                            SELECT 1 FROM preferencias_adotante pref 
+                            WHERE pref.pref_porte = 'Grande' 
+                            AND pref.pref_porte NOT IN ('Sem preferência')
+                        ) THEN 0
+                        ELSE 1 
+                    END,
+                    ABS(CAST(e_ong.end_cep AS BIGINT) - CAST((SELECT adotante_cep FROM preferencias_adotante) AS BIGINT)),
+                    p.pet_id
+                LIMIT 10;
+                `, [userId]);
+            
+            res.status(200).json(pets.rows);
         } catch (error) {
             console.error('Erro na recomendação:', error);
             res.status(500).send('Erro ao buscar pets recomendados');

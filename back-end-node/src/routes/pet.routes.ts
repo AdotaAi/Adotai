@@ -5,9 +5,8 @@ const router: Router = Router();
 
 router.get('/about/:id', PetController.getPetInfo);
 
+router.post('/saved', PetController.getSavedPets);
 
-const router = Router();
-
-router.post('/pets/saved', PetController.getSavedPets);
+router.get('/get/:userId', PetController.getRecomendedPets);
 
 export default router;

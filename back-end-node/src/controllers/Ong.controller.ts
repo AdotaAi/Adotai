@@ -177,7 +177,7 @@ class OngController {
                 temperament,
                 petPcd,
                 description,
-                `http://192.168.0.105:3000/img/${req.file?.filename}`,
+                `http://192.168.0.102:3000/img/${req.file?.filename}`,
                 color,
                 'Disponível'
             ]);

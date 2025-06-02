@@ -131,6 +131,35 @@ class RequestsController {
         }
     }
 
+    static getRequestInfo: RequestHandler = async (req: Request, res: Response) => {
+        const { pedId } = req.params;
+
+        if (!pedId) {
+            res.sendStatus(400);
+            return;
+        }
+
+        const client = await db();        
+        try {
+            let request = await client.query(`
+                SELECT Pedidos.ped_id, Pedidos.ped_status, Pet.pet_nome, Pet.pet_img_url
+                FROM Pedidos
+                INNER JOIN Pet ON Pedidos.pet_id = Pet.pet_id
+                WHERE Pedidos.ped_id = $1
+            `, [pedId]);
+
+            res.status(200).json(request.rows);
+            return;
+        } catch (error) {
+            res.sendStatus(500);
+            console.log(error);
+            return;
+        } finally {
+            client.release();
+        }
+        
+    }
+
     static sendMessage: RequestHandler = async (req: Request, res: Response) => {
         const { email, message, pedId } = req.body;
         
