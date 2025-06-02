@@ -1,9 +1,11 @@
 import axios from "axios";
 import { getSessionData, setSessionData } from "./core/sStorage";
 import { getData } from "./core/lStorage";
+import { data } from "react-router-dom";
+import { number } from "framer-motion";
 
 const api = axios.create({
-    baseURL: 'http://192.168.0.105:3000/',
+    baseURL: 'http://192.168.0.102:3000/',
 });
 
 export const postRegister = async (entity: string, data: any) => {
@@ -100,6 +102,26 @@ export const getMessages = async () => {
 export const sendMessages = async (data: any) => {
     try {
         const response = await api.post(`/requests/messages/`, data);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const getRecomendedPets = async () => {
+    try {
+        const response = await api.get(`/pet/get/${getSessionData('token')}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const getSavedPets = async (data: number[]) => {
+    try {
+        const response = await api.post(`/pet/saved`, data);
         return response.data;
     } catch (error) {
         console.error(error);

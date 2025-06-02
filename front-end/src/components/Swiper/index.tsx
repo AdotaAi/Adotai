@@ -1,54 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./styles.module.css";
 import { X, Heart, ShareFat, MapPin } from "@phosphor-icons/react";
-import { setData } from "../../core/lStorage";
+import { setData, getData } from "../../core/lStorage";
 import { useNavigate } from "react-router-dom";
+import { getRecomendedPets } from "../../api";
 
 type Info = {
-    id: number;
-    name: string;
-    image: string;
-    ongName: string;
-    address: string;
+    pet_id: number;
+    pet_nome: string;
+    pet_img_url: string;
+    ong_nome: string;
+    end_bairro: string;
 }
-
-const dados: Info[] = [
-    {
-        id: 9,
-        name: "Kittie",
-        image: "http://192.168.0.105:3000/img/1748029037112_9f4ccad09136b75b3c04139467bf610f.jpg",
-        ongName: "ONG Teste",
-        address: "Bairro Teste"
-    },
-    {
-        id: 10,
-        name: "Garfield",
-        image: "http://192.168.0.105:3000/img/1748029393140_download.jpeg",
-        ongName: "ONG Teste",
-        address: "Bairro Teste"
-    },
-    {
-        id: 11,
-        name: "Leslie",
-        image: "http://192.168.0.105:3000/img/1748054718256_cat-selfie-v0-vik1m2dpa98a1.webp",
-        ongName: "ONG Teste",
-        address: "Bairro Teste"
-    },
-    {
-        id: 12,
-        name: "Fred",
-        image: "http://192.168.0.105:3000/img/1748055056150_images.jpeg",
-        ongName: "ONG Teste",
-        address: "Bairro Teste"
-    },
-];
 
 export function Swiper() {
     const navigate = useNavigate();
 
+    const [dados, setDados] = useState<Info[]>([]);
     const [index, setIndex] = useState(0);
     const [direcao, setDirecao] = useState<"esquerda" | "direita">("direita");
+
+
+    useEffect(() => {
+        getRecomendedPets().then((response) => {
+            setDados(response);
+        });
+    }, []);
+
+    const handleSave = (id: number) => {
+        let pets: number[] = getData('savedPets') || [];
+        pets.push(id);
+        setData('savedPets', pets);
+        setIndex((prev) => (prev < dados.length - 1 ? prev + 1 : 0));
+    }
 
     const handleNext = () => {
         setIndex((prev) => (prev < dados.length - 1 ? prev + 1 : 0));
@@ -56,13 +41,15 @@ export function Swiper() {
 
     const currentInfo = dados[index];
 
+    if (dados.length === 0) return <p>Carregando...</p>;
+
     return (
         <div style={{ width: "300px", height: "", overflow: "hidden", position: "relative" }}>
 
 
             <AnimatePresence mode="wait">
                 <motion.div
-                    key={currentInfo.id}
+                    key={currentInfo.pet_id}
                     initial={{ x: direcao === "direita" ? 300 : -300, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: direcao === "direita" ? -300 : 300, opacity: 0 }}
@@ -72,29 +59,29 @@ export function Swiper() {
                     <div
                         className={styles.card}
                         style={{
-                            backgroundImage: `url(${currentInfo.image})`
+                            backgroundImage: `url(${currentInfo.pet_img_url})`
                         }}
                         onClick={() => {
-                            setData('pet', currentInfo.id);
+                            setData('pet', currentInfo.pet_id);
                             navigate(`/about-the-pet/`);
                         }}
                     >
                         
 
                         <div>
-                            <strong>{currentInfo.name}</strong>
+                            <strong>{currentInfo.pet_nome}</strong>
                             <span>
                                 <MapPin
                                     size={24}
                                 />
-                                <span>{currentInfo.address}</span>
+                                <span>{currentInfo.end_bairro}</span>
                             </span>
                         </div>
 
                     </div>
                     <div className={styles.buttons}>
                         <button><ShareFat size={32} weight="fill"/></button>
-                        <button><Heart size={32} weight="fill"/></button>
+                        <button onClick={() => handleSave(currentInfo.pet_id)}><Heart size={32} weight="fill"/></button>
                         <button onClick={handleNext}><X size={32}/></button>
                     </div>
                 </motion.div>

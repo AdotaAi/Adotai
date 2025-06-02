@@ -57,7 +57,7 @@ export function Preference() {
                             label="Escolha uma especie"
                             id="species"
                             name="species"
-                            options={['Cachorro', 'Gato', 'Outro']}
+                            options={['Cachorro', 'Gato', 'Ambos']}
                             onChange={(event) => setSpecies(event.target.value)}
                         />
 
@@ -65,7 +65,7 @@ export function Preference() {
                             label="Escolha o porte"
                             id="size"
                             name="size"
-                            options={['Pequeno', 'Medio', 'Grande']}
+                            options={['Pequeno', 'Medio', 'Grande', 'Sem preferência']}
                             onChange={(event) => setSize(event.target.value)}
                         />
 
@@ -73,7 +73,7 @@ export function Preference() {
                             label="Escolha a idade"
                             id="age"
                             name="age"
-                            options={['Filhote (Até 1 ano)', 'Adulto (1 até 7 anos)', 'Idoso (Apartir de 7 a 8 anos)']}
+                            options={['Filhote (Até 1 ano)', 'Adulto (1 até 7 anos)', 'Idoso (Apartir de 7 a 8 anos)', 'Sem preferência']}
                             onChange={(event) => setAge(event.target.value)}
                         />
 
@@ -81,7 +81,7 @@ export function Preference() {
                             label="Escolha o sexo"
                             id="gender"
                             name="gender"
-                            options={['Macho', 'Femea']}
+                            options={['Macho', 'Femea', 'Ambos']}
                             onChange={(event) => setGender(event.target.value)}
                         />
 
@@ -89,7 +89,7 @@ export function Preference() {
                             label="Escolha o temperamento"
                             id="temperament"
                             name="temperament"
-                            options={['Agressivo', 'Calmo', 'Outro']}
+                            options={['Agressivo', 'Calmo', 'Sem preferência']}
                             onChange={(event) => setTemperament(event.target.value)}
                         />
 
