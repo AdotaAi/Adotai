@@ -1,6 +1,6 @@
 import styles from "./styles.module.css";
 import { BottomTabBar } from "../../components/BottomTabBar";
-import { GearSix, Dog, FileMagnifyingGlass, SignOut } from "@phosphor-icons/react";
+import { GearSix, Dog, FileMagnifyingGlass, SignOut, Sun, Moon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { getProfile } from "../../api";
 import { getSessionData } from "../../core/sStorage";
@@ -8,9 +8,21 @@ import placeholderImage from "../../assets/placeholder.gif";
 
 export function User() {
 
+    const temaAtual = () => {
+        const html = document.documentElement;
+        if (html.classList.contains('dark')) {
+            return 'Escuro';
+        } else {
+            return 'Claro';
+        }
+    }
+
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [userImg, setUserImg] = useState(placeholderImage);
+    const [tema, setTema] = useState(temaAtual());
+
+    
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -27,6 +39,18 @@ export function User() {
         fetchProfile();
     }, []);
 
+    const mudarTema = () => {
+        const html = document.documentElement;
+
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+        } else {
+            html.classList.add('dark');
+        }
+    }
+
+    
+
     return (
         <main className={styles.container}>
             <div className={styles.profile}>
@@ -37,9 +61,14 @@ export function User() {
                 </div>
             </div>
             <ul>
-                <li>
-                    <GearSix size={32} weight="fill" />
-                    <span>Configurações</span>
+                <li
+                    onClick={()=> {
+                        mudarTema();
+                        setTema(temaAtual());
+                    }}
+                >
+                    {tema == 'Claro'? (<Sun size={32} weight="fill" />) : (<Moon size={32} weight="fill" />)}
+                    <span>Tema {tema}</span>
                 </li>
                 <li>
                     <Dog size={32} weight="fill" />
