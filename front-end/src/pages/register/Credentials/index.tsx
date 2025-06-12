@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { postRegister } from "../../../api";
 import { setSessionData } from "../../../core/sStorage";
+import { setData } from "../../../core/lStorage";
 
 import { Input } from "../../../components/Input";
 import { Button } from "../../../components/Button";
@@ -44,6 +45,7 @@ export function Credentials() {
             const response = await postRegister(getData('register').howAreYou ,getData('register'));
             console.log(response);
             setSessionData('token', response.user_token);
+            setData('email', email);
         } catch (error) {
             console.error(error);
             throw error;
