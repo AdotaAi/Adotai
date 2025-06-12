@@ -200,7 +200,7 @@ class PetController {
                         )
                         AND (
                             p.pet_pcd = FALSE 
-                            OR pref.pref_aceita_pets_pcd = TRUE 
+                            OR pref.pref_aceita_pets_pcd = TRUE
                             OR pref.pref_aceita_pets_pcd IS NULL
                         )
                         AND CAST(e_ong.end_cep AS BIGINT) BETWEEN 
